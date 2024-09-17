@@ -110,10 +110,25 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             setContentView(R.layout.barcode_capture);
 
             String buttonText = "";
-            try {
+            int cameraFacing = CameraSource.CAMERA_FACING_BACK;
+    
+        try {
                     buttonText = (String) getIntent().getStringExtra("cancelButtonText");
         } catch (Exception e) {
             buttonText = "Cancel";
+            Log.e("BCActivity:onCreate()", "onCreate: " + e.getLocalizedMessage());
+        }
+
+        try {
+            cameraFacing = getIntent().getIntExtra("cameraFacing", 0);
+            if (cameraFacing == 0) {
+                cameraFacing = CameraSource.CAMERA_FACING_FRONT;
+            } else {
+                cameraFacing = CameraSource.CAMERA_FACING_BACK;
+            }
+        }
+        catch (Exception e) {
+            cameraFacing = CameraSource.CAMERA_FACING_BACK;
             Log.e("BCActivity:onCreate()", "onCreate: " + e.getLocalizedMessage());
         }
 
@@ -139,7 +154,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
             if (rc == PackageManager.PERMISSION_GRANTED) {
-                createCameraSource(autoFocus, useFlash, CameraSource.CAMERA_FACING_BACK);
+                createCameraSource(autoFocus, useFlash, cameraFacing);
             } else {
                 requestCameraPermission();
             }
